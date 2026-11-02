@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Données locales du serveur
+server/data/
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+
+# IA
+ia/data/
+ia/runs/
+*.pt
+*.onnx
+
+# Divers
+.env
+.env.*
+.DS_Store
+Thumbs.db
+.vscode/
