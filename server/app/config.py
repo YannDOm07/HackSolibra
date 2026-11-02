@@ -17,6 +17,10 @@ DEMO_SEED = os.getenv("KABOCHAR_DEMO_SEED", "1") == "1"
 # Accélération des cuissons simulées : secondes simulées par seconde réelle.
 SIM_SPEED = float(os.getenv("KABOCHAR_SIM_SPEED", "20"))
 
+# Modèle de diagnostic des cabosses (produit par ia/entrainer.py) et extracteur DINOv2.
+IA_DIR = Path(os.getenv("KABOCHAR_IA_DIR", BASE_DIR.parent / "ia" / "modele"))
+IA_EXTRACTEUR = Path(os.getenv("KABOCHAR_IA_EXTRACTEUR", BASE_DIR.parent / "ia" / "modeles" / "dinov2-small.onnx"))
+
 # Tableau de bord web une fois construit (npm run build dans dashboard/), servi sous /tableau/.
 TABLEAU_DIR = Path(os.getenv("KABOCHAR_TABLEAU_DIR", BASE_DIR.parent / "dashboard" / "dist"))
 

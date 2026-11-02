@@ -11,7 +11,7 @@ from sqlalchemy import exists, select
 from . import config
 from .db import SessionLocal, init_db
 from .models import Cuisson, Producteur
-from .routers import fours, impact, lots, photos, producteurs, sync
+from .routers import diagnostics, fours, impact, lots, photos, producteurs, sync
 from .services import finaliser_cuisson
 from .temps_reel import hub, simulations
 
@@ -45,7 +45,7 @@ app = FastAPI(
 )
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-for module in (producteurs, lots, fours, impact, sync, photos):
+for module in (producteurs, lots, fours, impact, sync, photos, diagnostics):
     app.include_router(module.router, prefix="/api/v1")
 
 config.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

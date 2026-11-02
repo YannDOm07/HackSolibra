@@ -161,6 +161,45 @@ export interface Photo {
   prise_le: string
 }
 
+export type ClasseCabosse = 'healthy' | 'black_pod_rot' | 'pod_borer'
+
+export interface Evaluation {
+  n: number
+  exactitude: number
+  exactitude_equilibree: number
+  f1_macro: number
+  par_classe: Record<ClasseCabosse, { precision: number; rappel: number; f1: number; effectif: number }>
+  matrice_confusion: number[][]
+  part_jugee_sure: number
+  exactitude_si_sure: number
+}
+
+export interface FicheModele {
+  disponible: boolean
+  version?: string
+  classes?: ClasseCabosse[]
+  libelles?: Record<ClasseCabosse, string>
+  extracteur?: string
+  seuil_incertitude?: number
+  methode?: string
+  date?: string
+  jeu_de_donnees?: { nom: string; auteur: string; source: string; licence: string; origine: string; effectifs: Record<ClasseCabosse, number> }
+  decoupage?: { graine: number; entrainement: number; validation: number; test: number }
+  augmentation?: string
+  test?: Evaluation
+  quasi_doublons?: { seuil_similarite_cosinus: number; photos_test_concernees: number; test_sans_quasi_doublons: Evaluation | null }
+}
+
+export interface DiagnosticIA {
+  id: string
+  etiquette: ClasseCabosse
+  confiance: number
+  scores: Record<ClasseCabosse, number>
+  modele: string
+  photo_url: string | null
+  cree_le: string
+}
+
 export interface Reference {
   cle: string
   valeur: string

@@ -157,6 +157,29 @@ export interface ReponseSync {
   fours: Four[];
 }
 
+export type ClasseCabosse = 'healthy' | 'black_pod_rot' | 'pod_borer';
+
+export interface ResultatDiagnostic {
+  id: string;
+  etiquette: ClasseCabosse;
+  libelle: string;
+  confiance: number;
+  incertain: boolean;
+  scores: Record<ClasseCabosse, number>;
+  libelles: Record<ClasseCabosse, string>;
+  conseil: string;
+  modele: string;
+  photo_url: string;
+  cree_le: string;
+}
+
+export interface FicheModele {
+  disponible: boolean;
+  version?: string;
+  test?: { n: number; exactitude: number; exactitude_equilibree: number; f1_macro: number };
+  jeu_de_donnees?: { nom: string; auteur: string; licence: string; origine: string };
+}
+
 export interface Reference {
   cle: string;
   valeur: string;

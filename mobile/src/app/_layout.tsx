@@ -58,6 +58,7 @@ export default function Racine() {
         <Stack.Screen name="etape/[id]" options={modale} />
         <Stack.Screen name="scanner" options={{ ...modale, contentStyle: { backgroundColor: '#000' } }} />
         <Stack.Screen name="reglages" options={modale} />
+        <Stack.Screen name="diagnostic" options={modale} />
       </Stack>
       <Notifications />
     </GestureHandlerRootView>

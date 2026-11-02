@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import type { Cuisson, CuissonDetail, Meta, Passeport, ReponseSync } from './types';
+import type { Cuisson, CuissonDetail, FicheModele, Meta, Passeport, ReponseSync, ResultatDiagnostic } from './types';
 
 /** Le serveur tourne sur le PC qui sert aussi l'application à Expo Go : même adresse IP, port 8000. */
 export function urlParDefaut(): string {
@@ -54,6 +54,18 @@ async function requete<T>(chemin: string, init: RequestInit & { delai?: number }
 
 const json = (body: unknown) => ({ method: 'POST', body: JSON.stringify(body) });
 
+async function formulaireAvecPhoto(uri: string, champs: Record<string, string | number | undefined>) {
+  const form = new FormData();
+  if (Platform.OS === 'web') {
+    form.append('fichier', await (await fetch(uri)).blob(), 'photo.jpg');
+  } else {
+    // React Native accepte un objet { uri, name, type } comme fichier.
+    form.append('fichier', { uri, name: 'photo.jpg', type: 'image/jpeg' } as unknown as Blob);
+  }
+  for (const [k, v] of Object.entries(champs)) if (v != null) form.append(k, String(v));
+  return form;
+}
+
 export const api = {
   sante: () => requete<{ ok: boolean; version: string }>('/health', { delai: 3000 }),
   meta: () => requete<Meta>('/meta'),
@@ -69,17 +81,14 @@ export const api = {
   terminerCuisson: (id: string) => requete<Cuisson>(`/cuissons/${id}/terminer`, { method: 'POST' }),
 
   async envoyerPhoto(p: { uri: string; type: string; lot_id?: string; latitude?: number; longitude?: number }) {
-    const form = new FormData();
-    if (Platform.OS === 'web') {
-      form.append('fichier', await (await fetch(p.uri)).blob(), 'photo.jpg');
-    } else {
-      // React Native accepte un objet { uri, name, type } comme fichier.
-      form.append('fichier', { uri: p.uri, name: 'photo.jpg', type: 'image/jpeg' } as unknown as Blob);
-    }
-    form.append('type', p.type);
-    if (p.lot_id) form.append('lot_id', p.lot_id);
-    if (p.latitude != null) form.append('latitude', String(p.latitude));
-    if (p.longitude != null) form.append('longitude', String(p.longitude));
+    const form = await formulaireAvecPhoto(p.uri, { type: p.type, lot_id: p.lot_id, latitude: p.latitude, longitude: p.longitude });
     return requete<{ id: string; url: string }>('/photos', { method: 'POST', body: form, delai: 30000 });
   },
+
+  async diagnostiquer(uri: string, contexte: { lot_id?: string; parcelle_id?: string } = {}) {
+    const form = await formulaireAvecPhoto(uri, contexte);
+    // Le premier diagnostic charge le modèle sur le serveur : on laisse le temps.
+    return requete<ResultatDiagnostic>('/diagnostics', { method: 'POST', body: form, delai: 90000 });
+  },
+  ficheModele: () => requete<FicheModele>('/ia/modele'),
 };

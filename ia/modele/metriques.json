@@ -1,0 +1,127 @@
+{
+  "version": "kabochar-cabosses-1.0",
+  "date": "2026-11-02T12:30:53+00:00",
+  "duree_s": 618,
+  "methode": "Sonde linéaire : caractéristiques DINOv2-small figées + régression logistique multinomiale (numpy), pondérée par classe",
+  "jeu_de_donnees": {
+    "nom": "Cacao Diseases",
+    "auteur": "Zaldy Jr. Pagaduan",
+    "source": "https://www.kaggle.com/datasets/zaldyjr/cacao-diseases",
+    "licence": "CC BY-SA 4.0",
+    "origine": "Davao City, Mindanao (Philippines)",
+    "effectifs": {
+      "healthy": 3344,
+      "black_pod_rot": 943,
+      "pod_borer": 103
+    }
+  },
+  "decoupage": {
+    "graine": 2026,
+    "entrainement": 3074,
+    "validation": 658,
+    "test": 658
+  },
+  "augmentation": "miroir horizontal pour toutes les photos d'entraînement ; rotations 90°, 180°, 270° pour la classe rare (foreur)",
+  "regularisation_l2": 0.001,
+  "validation_par_l2": {
+    "0.0001": 0.8537,
+    "0.001": 0.8967,
+    "0.01": 0.893,
+    "0.1": 0.8682
+  },
+  "test": {
+    "n": 658,
+    "exactitude": 0.9286,
+    "exactitude_equilibree": 0.8536,
+    "f1_macro": 0.8562,
+    "par_classe": {
+      "healthy": {
+        "precision": 0.9616,
+        "rappel": 0.9482,
+        "f1": 0.9549,
+        "effectif": 502
+      },
+      "black_pod_rot": {
+        "precision": 0.8322,
+        "rappel": 0.8794,
+        "f1": 0.8552,
+        "effectif": 141
+      },
+      "pod_borer": {
+        "precision": 0.7857,
+        "rappel": 0.7333,
+        "f1": 0.7586,
+        "effectif": 15
+      }
+    },
+    "matrice_confusion": [
+      [
+        476,
+        24,
+        2
+      ],
+      [
+        16,
+        124,
+        1
+      ],
+      [
+        3,
+        1,
+        11
+      ]
+    ],
+    "part_jugee_sure": 0.9726,
+    "exactitude_si_sure": 0.9406
+  },
+  "quasi_doublons": {
+    "seuil_similarite_cosinus": 0.97,
+    "photos_test_concernees": 1,
+    "test_sans_quasi_doublons": {
+      "n": 657,
+      "exactitude": 0.9285,
+      "exactitude_equilibree": 0.8536,
+      "f1_macro": 0.8562,
+      "par_classe": {
+        "healthy": {
+          "precision": 0.9615,
+          "rappel": 0.9481,
+          "f1": 0.9548,
+          "effectif": 501
+        },
+        "black_pod_rot": {
+          "precision": 0.8322,
+          "rappel": 0.8794,
+          "f1": 0.8552,
+          "effectif": 141
+        },
+        "pod_borer": {
+          "precision": 0.7857,
+          "rappel": 0.7333,
+          "f1": 0.7586,
+          "effectif": 15
+        }
+      },
+      "matrice_confusion": [
+        [
+          475,
+          24,
+          2
+        ],
+        [
+          16,
+          124,
+          1
+        ],
+        [
+          3,
+          1,
+          11
+        ]
+      ],
+      "part_jugee_sure": 0.9726,
+      "exactitude_si_sure": 0.9405
+    }
+  },
+  "seuil_incertitude": 0.6
+}

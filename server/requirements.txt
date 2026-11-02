@@ -5,6 +5,11 @@ SQLAlchemy==2.1.6
 pydantic==2.14.2
 python-multipart==0.0.33
 
+# Diagnostic des cabosses (IA)
+onnxruntime==1.31.1
+numpy==2.5.4
+pillow==13.0.0
+
 # Tests
 pytest==9.2.0
 httpx==0.28.1

@@ -1,4 +1,4 @@
-import { BookOpen, FileText, Flame, LayoutDashboard, Package, Users } from 'lucide-react'
+import { BookOpen, FileText, Flame, LayoutDashboard, Microscope, Package, Users } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 
 import { useApi } from '@/lib/donnees'
@@ -10,6 +10,7 @@ const NAVIGATION = [
   { vers: '/fours', libelle: 'Fours en direct', icone: Flame },
   { vers: '/lots', libelle: 'Lots', icone: Package },
   { vers: '/producteurs', libelle: 'Producteurs', icone: Users },
+  { vers: '/ia', libelle: 'Diagnostics IA', icone: Microscope },
   { vers: '/rapport', libelle: 'Rapport trimestriel', icone: FileText },
   { vers: '/methode', libelle: 'Méthode et sources', icone: BookOpen },
 ]

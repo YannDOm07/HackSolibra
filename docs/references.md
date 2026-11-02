@@ -93,7 +93,16 @@ Aucune étude ne chiffre leur contribution aux épidémies : ne pas en inventer.
 
 Les estimations varient du simple au double selon la méthode : dans le dossier, on cite la source à chaque fois.
 
-## 8. Crédits carbone
+## 8. Intelligence artificielle (diagnostic des cabosses)
+
+| Élément | Détail | Source |
+|---|---|---|
+| Jeu de données | « Cacao Diseases », 4 390 photos 1080 × 1080 : saine 3 344, pourriture brune 943, foreur 103 ; prises à Davao (Philippines) | Zaldy Jr. Pagaduan, [Kaggle](https://www.kaggle.com/datasets/zaldyjr/cacao-diseases), licence **CC BY-SA 4.0** |
+| Extracteur de caractéristiques | DINOv2-small (Meta AI), version ONNX | [facebook/dinov2-small](https://huggingface.co/facebook/dinov2-small), licence **Apache 2.0** ; export ONNX [Xenova/dinov2-small](https://huggingface.co/Xenova/dinov2-small) |
+
+Méthode, découpage et scores réels : [`ia/README.md`](../ia/README.md) et `ia/modele/metriques.json`.
+
+## 9. Crédits carbone
 
 | Valeur | Source |
 |---|---|

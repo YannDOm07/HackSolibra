@@ -16,6 +16,7 @@ import { Coque } from '@/components/Coque'
 import { FournisseurDirect } from '@/lib/direct'
 import { Apercu } from '@/pages/Apercu'
 import { Fours } from '@/pages/Fours'
+import { Ia } from '@/pages/Ia'
 import { Lot } from '@/pages/Lot'
 import { Lots } from '@/pages/Lots'
 import { Methode } from '@/pages/Methode'
@@ -33,6 +34,7 @@ createRoot(document.getElementById('racine')!).render(
             <Route path="lots" element={<Lots />} />
             <Route path="lots/:id" element={<Lot />} />
             <Route path="producteurs" element={<Producteurs />} />
+            <Route path="ia" element={<Ia />} />
             <Route path="rapport" element={<Rapport />} />
             <Route path="methode" element={<Methode />} />
           </Route>

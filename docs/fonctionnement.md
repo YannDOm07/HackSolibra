@@ -58,6 +58,13 @@ Exemple réel : `44,2 kg × 0,45 × 0,89 × 44/12 = 64,9 kg de CO₂`.
 C'est une **estimation brute** : les crédits certifiés seront inférieurs (le standard déduit les émissions du four), et on l'affiche.
 Toutes les valeurs et leurs sources : [`references.md`](references.md).
 
+### Diagnostic des cabosses par l'IA (`ia/`, `server/app/ia.py`)
+L'agent photographie une cabosse ; le modèle répond **saine**, **pourriture brune** ou **foreur de cabosse**, avec sa confiance et un conseil
+(les cabosses malades partent au four, où la pyrolyse détruit la maladie). Méthode : DINOv2-small (Meta) extrait les caractéristiques
+de la photo, une couche de décision entraînée sur 4 390 photos publiques les classe.
+Scores réels sur 658 photos jamais vues : **exactitude 92,9 %**, F1 macro 85,6 %. Limite : photos des Philippines, à confirmer
+sur des cabosses ivoiriennes pendant le pilote. Détail : [`ia/README.md`](../ia/README.md).
+
 ### Empreinte SHA-256
 Un « résumé » calculé à partir des pesées, des dates et de la cuisson. Si une seule donnée change, l'empreinte change : preuve d'intégrité.
 
@@ -89,6 +96,7 @@ Servi par le serveur sur http://localhost:8000 (adresse `/tableau/`), pour la co
 - **Lots** et **passeport** : recherche, filtre par étape, et pour chaque lot son passeport complet (QR code, parcours,
   courbe, calcul carbone détaillé, empreinte SHA-256, photos du terrain).
 - **Producteurs** : fiches, parcelles, surface suivie, part des productrices.
+- **Diagnostics IA** : fiche du modèle (scores par classe, matrice de confusion, limites) et derniers diagnostics avec leurs photos.
 - **Rapport trimestriel** : le rapport exigé par l'article 10 du règlement, généré automatiquement et imprimable en PDF.
 - **Méthode et sources** : la formule, la table du GIEC et chaque valeur publiée avec son lien.
 

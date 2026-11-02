@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ArrowRight, Package, QrCode, Settings2 } from 'lucide-react-native';
+import { ArrowRight, Microscope, Package, QrCode, Settings2 } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -114,6 +114,21 @@ export default function Accueil() {
             </Texte>
           </View>
         </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.duration(420).delay(140)}>
+        <Pressable onPress={() => router.push('/diagnostic')} style={({ pressed }) => [s.ia, pressed && { opacity: 0.75 }]}>
+          <View style={s.iaIcone}>
+            <Microscope size={22} color={C.braise600} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Texte v="corpsFort">Diagnostic d'une cabosse</Texte>
+            <Texte v="petit" c={C.charbon500}>
+              L'IA repère la pourriture brune et le foreur
+            </Texte>
+          </View>
+          <ArrowRight size={18} color={C.charbon400} />
+        </Pressable>
       </Animated.View>
 
       <Section
@@ -240,6 +255,18 @@ const s = StyleSheet.create({
   },
   separateur: { width: 1, backgroundColor: C.charbon700 },
   lien: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  ia: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginTop: 12,
+    padding: 16,
+    borderRadius: 22,
+    backgroundColor: C.blanc,
+    borderWidth: 1,
+    borderColor: C.papier200,
+  },
+  iaIcone: { width: 44, height: 44, borderRadius: 14, backgroundColor: '#FDEBDD', alignItems: 'center', justifyContent: 'center' },
   chaine: { backgroundColor: C.blanc, borderRadius: 22, borderWidth: 1, borderColor: C.papier200, padding: 16 },
   chaineBarre: { flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', gap: 3, backgroundColor: C.papier100 },
   chaineLegende: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 14, rowGap: 8, columnGap: 14 },
