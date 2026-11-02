@@ -30,3 +30,6 @@ Thumbs.db
 # Outils d'assistance locaux (non versionnés)
 .claude/
 AGENTS.md
+
+# Configuration locale du capteur (mot de passe Wi-Fi)
+firmware/kabochar_capteur/config.h

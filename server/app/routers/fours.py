@@ -1,4 +1,5 @@
 import asyncio
+from datetime import timedelta
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy import select
@@ -8,7 +9,7 @@ from .. import config
 from ..cuisson import simuler_profil
 from ..db import get_db
 from ..models import STATUTS_LOT, Cuisson, Four, Lot, Mesure
-from ..schemas import CuissonDetail, CuissonOut, CuissonStart, FourOut, MesureIn, MesureOut, SimulationStart
+from ..schemas import CuissonDetail, CuissonOut, CuissonStart, FourOut, MesureIn, MesureOut, MesuresLotIn, SimulationStart
 from ..services import appliquer_statut, cuisson_detail, finaliser_cuisson
 from ..temps_reel import executer_simulation, hub, simulations
 from ..utils import utcnow
@@ -127,23 +128,45 @@ async def terminer_cuisson(cid: str, db: Session = Depends(get_db)):
 
 
 # ---------- Mesures des capteurs ----------
-@router.post("/mesures")
-async def recevoir_mesure(data: MesureIn, x_device_key: str = Header(default=""), db: Session = Depends(get_db)):
-    if x_device_key != config.DEVICE_KEY:
+def _verifier_cle(cle: str) -> None:
+    if cle != config.DEVICE_KEY:
         raise HTTPException(401, "Clé de capteur invalide.")
-    four = db.scalars(select(Four).where(Four.device_id == data.device_id)).first()
+
+
+async def _enregistrer_mesure(db: Session, device_id: str, temp: float, interne: float | None, t) -> dict:
+    four = db.scalars(select(Four).where(Four.device_id == device_id)).first()
     c = cuisson_active(db, four.id) if four else None
-    t = data.t or utcnow()
-    db.add(Mesure(device_id=data.device_id, four_id=four.id if four else None, cuisson_id=c.id if c else None,
-                  t=t, temp_c=data.temp_c, temp_interne_c=data.temp_interne_c, source="capteur"))
+    # Une mesure antérieure au début de la cuisson (renvoyée après une coupure) n'en fait pas partie.
+    if c is not None and t < c.debut:
+        c = None
+    db.add(Mesure(device_id=device_id, four_id=four.id if four else None, cuisson_id=c.id if c else None,
+                  t=t, temp_c=temp, temp_interne_c=interne, source="capteur"))
     db.commit()
     if c is None:
         # Capteur non associé à une cuisson : mode vérification / étalonnage.
-        await hub.diffuser({"type": "mesure_libre", "device_id": data.device_id, "temp": data.temp_c,
-                            "temp_interne": data.temp_interne_c, "four_id": four.id if four else None})
-        return {"ok": True, "cuisson_id": None, "phase": None}
-    phase = await hub.nouvelle_mesure(four.id, c.id, (t - c.debut).total_seconds(), data.temp_c, "capteur")
-    return {"ok": True, "cuisson_id": c.id, "phase": phase}
+        await hub.diffuser({"type": "mesure_libre", "device_id": device_id, "temp": temp,
+                            "temp_interne": interne, "four_id": four.id if four else None})
+        return {"cuisson_id": None, "phase": None}
+    phase = await hub.nouvelle_mesure(four.id, c.id, (t - c.debut).total_seconds(), temp, "capteur")
+    return {"cuisson_id": c.id, "phase": phase}
+
+
+@router.post("/mesures")
+async def recevoir_mesure(data: MesureIn, x_device_key: str = Header(default=""), db: Session = Depends(get_db)):
+    _verifier_cle(x_device_key)
+    t = data.t or utcnow() - timedelta(milliseconds=data.age_ms or 0)
+    return {"ok": True, **await _enregistrer_mesure(db, data.device_id, data.temp_c, data.temp_interne_c, t)}
+
+
+@router.post("/mesures/lot")
+async def recevoir_lot(data: MesuresLotIn, x_device_key: str = Header(default=""), db: Session = Depends(get_db)):
+    """Mesures gardées par le capteur pendant une coupure réseau, envoyées d'un coup, de la plus ancienne à la plus récente."""
+    _verifier_cle(x_device_key)
+    maintenant = utcnow()
+    dernier = {}
+    for m in sorted(data.mesures, key=lambda m: -m.age_ms):
+        dernier = await _enregistrer_mesure(db, data.device_id, m.temp_c, m.temp_interne_c, maintenant - timedelta(milliseconds=m.age_ms))
+    return {"ok": True, "recues": len(data.mesures), **dernier}
 
 
 @router.get("/mesures/recentes", response_model=list[MesureOut])

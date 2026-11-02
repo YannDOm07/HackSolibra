@@ -140,6 +140,19 @@ class MesureIn(BaseModel):
     temp_c: float
     temp_interne_c: float | None = None
     t: UTC | None = None  # facultatif : l'ESP32 n'a pas toujours l'heure
+    # Ancienneté de la mesure en ms (mesures gardées pendant une coupure réseau) : le serveur en déduit l'heure.
+    age_ms: int | None = Field(default=None, ge=0, le=86_400_000)
+
+
+class MesureLotItem(BaseModel):
+    temp_c: float
+    temp_interne_c: float | None = None
+    age_ms: int = Field(default=0, ge=0, le=86_400_000)
+
+
+class MesuresLotIn(BaseModel):
+    device_id: str = Field(min_length=1, max_length=64)
+    mesures: list[MesureLotItem] = Field(min_length=1, max_length=1000)
 
 
 class MesureOut(ORM):

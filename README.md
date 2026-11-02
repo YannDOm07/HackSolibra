@@ -68,6 +68,10 @@ le serveur lui-même, sous `/tableau/`. Une seule commande suffit donc pour une 
 
 En développement : `npm run dev` dans `dashboard/`, puis http://localhost:5173.
 
+## Capteur des fours (ESP32 + MAX31855)
+
+Programme, câblage et protocole de vérification de 15 minutes : [`firmware/README.md`](firmware/README.md).
+
 ## Ce qui est mesuré, ce qui est simulé
 
 - Les données de démonstration (producteurs, parcelles, lots) sont **fictives** et marquées `demo` en base ; les interfaces affichent un badge « DÉMO ».

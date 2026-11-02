@@ -93,3 +93,21 @@ def test_tableau_de_bord_et_protection_des_chemins(client, tmp_path, monkeypatch
     # Tentative de sortie du dossier (« .. » encodé pour atteindre le serveur) : on renvoie la page, jamais le fichier.
     r = client.get("/tableau/%2e%2e/%2e%2e/app/config.py")
     assert "TABLEAU_DIR" not in r.text and "racine" in r.text
+
+
+def test_capteur_renvoie_les_mesures_gardees_pendant_une_coupure(client):
+    h = {"X-Device-Key": config.DEVICE_KEY}
+    four = next(f for f in client.get("/api/v1/fours").json() if f["device_id"] == "esp32-f03")
+    c = client.post("/api/v1/cuissons", json={"four_id": four["id"]}).json()
+    time.sleep(0.8)
+    # Trois mesures prises pendant la cuisson (il y a 600, 400 et 200 ms), envoyées dans le désordre.
+    r = client.post("/api/v1/mesures/lot", headers=h, json={"device_id": "esp32-f03", "mesures": [
+        {"temp_c": 480, "age_ms": 200}, {"temp_c": 470, "age_ms": 600}, {"temp_c": 475, "age_ms": 400},
+    ]}).json()
+    assert r["recues"] == 3 and r["cuisson_id"] == c["id"]
+    points = client.get(f"/api/v1/cuissons/{c['id']}/mesures").json()
+    assert [p[1] for p in points] == [470, 475, 480]  # remises dans l'ordre chronologique
+    vieille = client.post("/api/v1/mesures", headers=h, json={"device_id": "esp32-f03", "temp_c": 30, "age_ms": 3_600_000}).json()
+    assert vieille["cuisson_id"] is None  # antérieure au début de la cuisson
+    client.post(f"/api/v1/cuissons/{c['id']}/terminer")
+    assert client.post("/api/v1/mesures/lot", json={"device_id": "x", "mesures": [{"temp_c": 1}]}).status_code == 401
