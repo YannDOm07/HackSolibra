@@ -22,7 +22,9 @@ export default function Reglages() {
   const synchro = useEtat((e) => e.synchro);
   const enAttente = useEtat((e) => Object.keys(e.sales).length);
   const photos = useEtat((e) => e.photos.length);
-  const comptes = useEtat((e) => ({ p: Object.keys(e.producteurs).length, l: Object.keys(e.lots).length }));
+  // Un sélecteur doit renvoyer une valeur stable (nombre, objet du store) : jamais un objet créé à la volée.
+  const nbProducteurs = useEtat((e) => Object.keys(e.producteurs).length);
+  const nbLots = useEtat((e) => Object.keys(e.lots).length);
   const [url, setUrl] = useState(getApiUrl());
   const [test, setTest] = useState(false);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -117,7 +119,7 @@ export default function Reglages() {
 
       <Section titre="Données du téléphone">
         <Texte v="petit" c={C.charbon500} style={{ marginBottom: 12 }}>
-          {comptes.p} producteurs et {comptes.l} lots sont enregistrés sur ce téléphone et restent consultables sans réseau.
+          {nbProducteurs} producteurs et {nbLots} lots sont enregistrés sur ce téléphone et restent consultables sans réseau.
         </Texte>
         <Bouton
           titre="Effacer et recharger depuis le serveur"
