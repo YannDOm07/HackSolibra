@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "KaboChar",
+    "slug": "kabochar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#181613",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-sqlite",
+      "expo-font",
+      "expo-image",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FBF8F3",
+          "image": "./assets/icon.png",
+          "imageWidth": 120
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "KaboChar utilise l’appareil photo pour scanner les passeports de lots et photographier les cabosses."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "KaboChar utilise l’appareil photo pour documenter chaque lot."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "KaboChar enregistre la position des parcelles pour tracer chaque lot."
+        }
+      ]
+    ],
+    "scheme": "kabochar",
+    "backgroundColor": "#FBF8F3",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

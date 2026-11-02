@@ -36,6 +36,25 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 `--host 0.0.0.0` rend le serveur joignable par les téléphones et l'ESP32 connectés au même réseau Wi-Fi
 (point d'accès du téléphone sur le terrain : aucune connexion internet n'est nécessaire).
 
+## Lancer l'application mobile (Expo Go)
+
+1. Installer **Expo Go** sur le téléphone (Play Store / App Store).
+2. Le PC et le téléphone doivent être sur le **même réseau Wi-Fi**, et le serveur doit tourner (section précédente).
+3. Puis :
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+4. Scanner le QR code affiché dans le terminal avec Expo Go (Android) ou l'appareil photo (iPhone).
+
+L'application trouve seule le serveur (même adresse IP que le PC, port 8000). Sinon : écran **Réglages** → adresse du serveur.
+Elle fonctionne hors connexion : les saisies sont enregistrées sur le téléphone (SQLite) et synchronisées dès que le serveur est joignable.
+
+Vérifications : `npx tsc --noEmit` (types) et `npx expo-doctor` (configuration).
+
 ## Ce qui est mesuré, ce qui est simulé
 
 - Les données de démonstration (producteurs, parcelles, lots) sont **fictives** et marquées `demo` en base ; les interfaces affichent un badge « DÉMO ».

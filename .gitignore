@@ -26,3 +26,7 @@ ia/runs/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Outils d'assistance locaux (non versionnés)
+.claude/
+AGENTS.md
