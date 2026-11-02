@@ -17,4 +17,7 @@ DEMO_SEED = os.getenv("KABOCHAR_DEMO_SEED", "1") == "1"
 # Accélération des cuissons simulées : secondes simulées par seconde réelle.
 SIM_SPEED = float(os.getenv("KABOCHAR_SIM_SPEED", "20"))
 
+# Tableau de bord web une fois construit (npm run build dans dashboard/), servi sous /tableau/.
+TABLEAU_DIR = Path(os.getenv("KABOCHAR_TABLEAU_DIR", BASE_DIR.parent / "dashboard" / "dist"))
+
 VERSION = "0.1.0"

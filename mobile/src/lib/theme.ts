@@ -49,12 +49,13 @@ export const F = {
 
 export const R = { sm: 8, md: 14, lg: 22, xl: 32 } as const;
 
+// Couleurs des étapes validées (daltonisme, contraste) sur fond clair et sombre : design/tokens.json.
 export const ETAPES: Record<Statut, { libelle: string; action: string; couleur: string; fond: string }> = {
-  collecte: { libelle: 'Collecte', action: 'Collecté', couleur: C.cabosse500, fond: '#F7EBD3' },
-  sechage: { libelle: 'Séchage', action: 'Au séchage', couleur: C.cabosse400, fond: '#FAF0D9' },
-  cuisson: { libelle: 'Pyrolyse', action: 'Au four', couleur: C.braise500, fond: '#FDE3D6' },
-  enrichissement: { libelle: 'Enrichissement', action: 'Enrichi', couleur: C.cacao500, fond: '#EFE3DA' },
-  epandu: { libelle: 'Retour au sol', action: 'Épandu', couleur: C.feuille500, fond: C.feuille100 },
+  collecte: { libelle: 'Collecte', action: 'Collecté', couleur: '#B07A20', fond: '#F6ECDA' },
+  sechage: { libelle: 'Séchage', action: 'Au séchage', couleur: '#408FBA', fond: '#E2EEF6' },
+  cuisson: { libelle: 'Pyrolyse', action: 'Au four', couleur: '#DE602F', fond: '#FBE5DC' },
+  enrichissement: { libelle: 'Enrichissement', action: 'Enrichi', couleur: '#954E87', fond: '#F2E5EF' },
+  epandu: { libelle: 'Retour au sol', action: 'Épandu', couleur: '#348F4F', fond: '#E1EFE5' },
 };
 
 export const PHASES: Record<string, { libelle: string; couleur: string }> = {

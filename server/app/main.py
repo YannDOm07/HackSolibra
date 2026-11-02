@@ -2,9 +2,9 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import exists, select
 
@@ -54,7 +54,20 @@ app.mount("/media", StaticFiles(directory=config.UPLOAD_DIR), name="media")
 
 @app.get("/", include_in_schema=False)
 def accueil():
-    return RedirectResponse("/docs")
+    return RedirectResponse("/tableau/" if (config.TABLEAU_DIR / "index.html").exists() else "/docs")
+
+
+@app.get("/tableau", include_in_schema=False)
+@app.get("/tableau/{chemin:path}", include_in_schema=False)
+def tableau_de_bord(chemin: str = ""):
+    """Fichiers du tableau de bord ; toute autre adresse renvoie la page (navigation côté navigateur)."""
+    racine = config.TABLEAU_DIR.resolve()
+    fichier = (racine / chemin).resolve()
+    if chemin and fichier.is_file() and racine in fichier.parents:
+        return FileResponse(fichier)
+    if not (racine / "index.html").exists():
+        raise HTTPException(404, "Tableau de bord non construit : lancer « npm run build » dans dashboard/.")
+    return FileResponse(racine / "index.html")
 
 
 @app.websocket("/ws")

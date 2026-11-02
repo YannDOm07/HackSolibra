@@ -55,6 +55,19 @@ Elle fonctionne hors connexion : les saisies sont enregistrées sur le télépho
 
 Vérifications : `npx tsc --noEmit` (types) et `npx expo-doctor` (configuration).
 
+## Lancer le tableau de bord
+
+```bash
+cd dashboard
+npm install
+npm run build
+```
+
+Puis lancer le serveur (section « Lancer le serveur ») et ouvrir **http://localhost:8000** : le tableau de bord est servi par
+le serveur lui-même, sous `/tableau/`. Une seule commande suffit donc pour une démonstration.
+
+En développement : `npm run dev` dans `dashboard/`, puis http://localhost:5173.
+
 ## Ce qui est mesuré, ce qui est simulé
 
 - Les données de démonstration (producteurs, parcelles, lots) sont **fictives** et marquées `demo` en base ; les interfaces affichent un badge « DÉMO ».

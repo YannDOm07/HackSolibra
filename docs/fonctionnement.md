@@ -77,6 +77,23 @@ Un « résumé » calculé à partir des pesées, des dates et de la cuisson. Si
 - **Scanner** : lit le QR code d'un lot et ouvre son passeport.
 - **Réglages** : adresse du serveur, capteurs détectés (test de l'ESP32), sources scientifiques.
 
+## Le tableau de bord (salle de contrôle)
+
+Servi par le serveur sur http://localhost:8000 (adresse `/tableau/`), pour la coordination et pour le jury.
+
+- **Vue d'ensemble** : CO₂ stocké, biochar, cabosses valorisées, rendement, hectares amendés, producteurs et productrices,
+  emplois de jeunes ; production par semaine ; chaîne des lots par étape ; classes de température ; carte du terrain
+  (plan ou satellite) ; fours en direct ; derniers lots. Filtre de période en haut.
+- **Fours en direct** : la courbe de chaque four se dessine en direct, avec lecture au survol, phases, classe GIEC et alertes ;
+  boutons pour lancer une cuisson (capteur ou simulation) ; panneau de test des capteurs ESP32.
+- **Lots** et **passeport** : recherche, filtre par étape, et pour chaque lot son passeport complet (QR code, parcours,
+  courbe, calcul carbone détaillé, empreinte SHA-256, photos du terrain).
+- **Producteurs** : fiches, parcelles, surface suivie, part des productrices.
+- **Rapport trimestriel** : le rapport exigé par l'article 10 du règlement, généré automatiquement et imprimable en PDF.
+- **Méthode et sources** : la formule, la table du GIEC et chaque valeur publiée avec son lien.
+
+Les couleurs des étapes ont été validées par calcul (lisibilité pour les daltoniens et contraste) sur fond clair et sombre.
+
 ## Où regarder dans le code
 
 | Dossier | Contenu |
@@ -84,6 +101,8 @@ Un « résumé » calculé à partir des pesées, des dates et de la cuisson. Si
 | `mobile/src/app/` | Un fichier = un écran (`lot/[id].tsx` passeport, `cuisson/[id].tsx` direct…) |
 | `mobile/src/lib/` | `store.ts` (données du téléphone), `synchro.ts`, `direct.ts`, `api.ts` |
 | `mobile/src/components/` | Boutons, courbe de température, cartes, barre d'onglets |
+| `dashboard/src/pages/` | Pages du tableau de bord (vue d'ensemble, fours, lots, passeport, producteurs, rapport, méthode) |
+| `dashboard/src/components/` | Graphiques, carte, menu latéral |
 | `server/app/` | `cuisson.py` (analyse, simulateur), `carbone.py` (GIEC), `services.py` (passeport, impact), `routers/` (API) |
 | `docs/` | Charte graphique, références scientifiques, cette fiche |
 

@@ -82,3 +82,14 @@ def test_rapport_trimestriel(client):
     r = client.get("/api/v1/rapports/trimestriel", params={"annee": 2026, "trimestre": 4}).json()
     assert r["titre"] == "Rapport trimestriel T4 2026"
     assert r["indicateurs"]["donnees_demo"] is True
+
+
+def test_tableau_de_bord_et_protection_des_chemins(client, tmp_path, monkeypatch):
+    (tmp_path / "index.html").write_text("<div id=racine></div>", encoding="utf-8")
+    (tmp_path / "app.js").write_text("console.log(1)", encoding="utf-8")
+    monkeypatch.setattr(config, "TABLEAU_DIR", tmp_path)
+    assert client.get("/tableau/app.js").text == "console.log(1)"
+    assert "racine" in client.get("/tableau/lots/123").text  # adresse interne : renvoie la page
+    # Tentative de sortie du dossier (« .. » encodé pour atteindre le serveur) : on renvoie la page, jamais le fichier.
+    r = client.get("/tableau/%2e%2e/%2e%2e/app/config.py")
+    assert "TABLEAU_DIR" not in r.text and "racine" in r.text
