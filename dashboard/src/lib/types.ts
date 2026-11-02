@@ -43,6 +43,11 @@ export interface Four {
   derniere_temp: number | null
   phase: string | null
   source: string | null
+  nb_cuissons: number
+  derniere_cuisson_id: string | null
+  derniere_cuisson_le: string | null
+  derniere_classe: string | null
+  derniere_temp_retenue: number | null
 }
 
 export interface Lot {

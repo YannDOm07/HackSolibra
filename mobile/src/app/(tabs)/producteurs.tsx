@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Search, UserPlus, Users } from 'lucide-react-native';
+import { Search, ShieldCheck, UserPlus, Users } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -63,9 +63,12 @@ export default function Producteurs() {
           </Animated.View>
         ))
       )}
-      <Texte v="petit" c={C.charbon400} style={{ marginTop: 16 }}>
-        Chaque fiche est créée avec l'accord du producteur (loi n° 2013-450 sur les données personnelles).
-      </Texte>
+      <View style={s.accord}>
+        <ShieldCheck size={15} color={C.feuille600} />
+        <Texte v="petit" c={C.feuille700} style={{ flex: 1, fontSize: 12.5 }}>
+          Fiches créées avec l'accord du producteur · loi n° 2013-450
+        </Texte>
+      </View>
     </Ecran>
   );
 }
@@ -84,4 +87,5 @@ const s = StyleSheet.create({
     marginBottom: 16,
   },
   saisie: { flex: 1, fontFamily: F.texteMoyen, fontSize: 15, color: C.charbon900 },
+  accord: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 16, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 14, backgroundColor: C.feuille100 },
 });

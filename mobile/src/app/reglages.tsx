@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import { Cpu, ExternalLink, Server, Trash2, X } from 'lucide-react-native';
+import { BookOpen, ChevronDown, Cpu, ExternalLink, Server, Trash2, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { Pulsation } from '@/components/courbe';
 import { Bouton, BoutonRond, Carte, Champ, Ecran, EnTete, Section, Texte } from '@/components/ui';
@@ -29,6 +30,7 @@ export default function Reglages() {
   const [test, setTest] = useState(false);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [, setTic] = useState(0);
+  const [sourcesOuvertes, setSourcesOuvertes] = useState(false);
 
   useEffect(() => {
     api.meta().then(setMeta).catch(() => {});
@@ -103,17 +105,27 @@ export default function Reglages() {
               {meta.methode.nature}
             </Texte>
           </Carte>
-          {meta.references.map((r) => (
-            <Pressable key={r.cle} onPress={() => Linking.openURL(r.url)} style={({ pressed }) => [s.reference, pressed && { opacity: 0.6 }]}>
-              <View style={{ flex: 1 }}>
-                <Texte v="petitFort">{r.valeur}</Texte>
-                <Texte v="petit" c={C.charbon500} style={{ fontSize: 12 }}>
-                  {r.source}
-                </Texte>
-              </View>
-              <ExternalLink size={15} color={C.charbon400} />
-            </Pressable>
-          ))}
+          <Pressable onPress={() => setSourcesOuvertes((o) => !o)} style={({ pressed }) => [s.deplier, pressed && { opacity: 0.7 }]}>
+            <BookOpen size={17} color={C.charbon600} />
+            <Texte v="petitFort" style={{ flex: 1 }}>
+              {meta.references.length} sources scientifiques
+            </Texte>
+            <ChevronDown size={17} color={C.charbon400} style={{ transform: [{ rotate: sourcesOuvertes ? '180deg' : '0deg' }] }} />
+          </Pressable>
+          {sourcesOuvertes &&
+            meta.references.map((r, i) => (
+              <Animated.View key={r.cle} entering={FadeInDown.duration(220).delay(30 * i)}>
+                <Pressable onPress={() => Linking.openURL(r.url)} style={({ pressed }) => [s.reference, pressed && { opacity: 0.6 }]}>
+                  <View style={{ flex: 1 }}>
+                    <Texte v="petitFort">{r.valeur}</Texte>
+                    <Texte v="petit" c={C.charbon500} style={{ fontSize: 12, marginTop: 2 }}>
+                      {r.source}
+                    </Texte>
+                  </View>
+                  <ExternalLink size={15} color={C.charbon400} />
+                </Pressable>
+              </Animated.View>
+            ))}
         </Section>
       )}
 
@@ -163,12 +175,24 @@ function Ligne({ etiquette, valeur, point }: { etiquette: string; valeur: string
 
 const s = StyleSheet.create({
   capteur: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, marginBottom: 8, borderRadius: 18 },
+  deplier: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 10,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: C.blanc,
+    borderWidth: 1,
+    borderColor: C.papier200,
+  },
   reference: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: C.papier200,
+    marginTop: 8,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: C.papier100,
   },
 });

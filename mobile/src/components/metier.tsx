@@ -3,9 +3,9 @@ import { ChevronRight, CloudUpload, Cpu, Users } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { dateHeure, initiales, masseTexte, nombre } from '@/lib/format';
+import { dateHeure, ilYa, initiales, masseTexte, nombre, temperature } from '@/lib/format';
 import type { EtatFourDirect } from '@/lib/store';
-import { C, ETAPES, PHASES, R } from '@/lib/theme';
+import { C, CLASSES, ETAPES, PHASES, R } from '@/lib/theme';
 import type { Four, Lot, Producteur, Statut } from '@/lib/types';
 
 import { Pulsation } from './courbe';
@@ -146,8 +146,16 @@ export function CarteFour({ four, etat, onPress, etroite }: { four: Four; etat?:
           {four.nom}
         </Texte>
         <Texte v="petit" c={C.charbon500}>
-          Au repos
+          {four.derniere_cuisson_le ? `Au repos · dernière cuisson ${ilYa(new Date(four.derniere_cuisson_le).getTime())}` : 'Au repos'}
         </Texte>
+        {four.derniere_classe && four.derniere_classe !== 'inconnue' && CLASSES[four.derniere_classe] && four.derniere_temp_retenue != null && (
+          <View style={s.derniere}>
+            <View style={[s.etapePoint, { backgroundColor: CLASSES[four.derniere_classe].couleur }]} />
+            <Texte v="petitFort" c={C.charbon700} style={{ fontSize: 12 }}>
+              Classe {CLASSES[four.derniere_classe].court.toLowerCase()} · {temperature(four.derniere_temp_retenue)}
+            </Texte>
+          </View>
+        )}
         <View style={s.fourPied}>
           <View style={s.fourInfo}>
             <Users size={13} color={C.charbon400} />
@@ -276,4 +284,15 @@ const s = StyleSheet.create({
   fourTete: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   fourPied: { marginTop: 'auto', paddingTop: 16, gap: 6 },
   fourInfo: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  derniere: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: C.papier100,
+  },
 });

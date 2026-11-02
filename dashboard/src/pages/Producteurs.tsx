@@ -26,6 +26,7 @@ export function Producteurs() {
     [producteurs, tri],
   )
   const femmes = producteurs.filter((p) => p.genre === 'F').length
+  const maxBiochar = Math.max(0, ...producteurs.map((p) => p.biochar_kg))
   const surfaceTotale = [...surface.values()].reduce((a, b) => a + b, 0)
 
   return (
@@ -33,7 +34,23 @@ export function Producteurs() {
       <EnTetePage surtitre="Coopérative pilote" titre="Producteurs" actions={producteurs.some((p) => p.demo) ? <BadgeDemo /> : undefined} />
       <div className="grille" style={{ marginBottom: 16 }}>
         <Tuile className="s3" etiquette="Producteurs" valeur={String(producteurs.length)} detail={`${new Set(producteurs.map((p) => p.village)).size} villages`} />
-        <Tuile className="s3" etiquette="Productrices" valeur={String(femmes)} detail={`${pourcent(producteurs.length ? femmes / producteurs.length : null)} des producteurs`} />
+        <div className="panneau s3">
+          <div className="etiquette">Productrices</div>
+          <div className="tuile-valeur">
+            {femmes}
+            <small>sur {producteurs.length}</small>
+          </div>
+          <div className="repartition" role="img" aria-label={`${femmes} femmes, ${producteurs.length - femmes} hommes`}>
+            <span style={{ flex: femmes, background: '#C98F2A' }} />
+            <span style={{ flex: producteurs.length - femmes, background: '#57514A' }} />
+          </div>
+          <div className="tuile-detail">
+            <span className="cle" style={{ background: '#C98F2A', marginRight: 5 }} />
+            femmes {pourcent(producteurs.length ? femmes / producteurs.length : null)}
+            <span className="cle" style={{ background: '#57514A', margin: '0 5px 0 12px' }} />
+            hommes
+          </div>
+        </div>
         <Tuile className="s3" etiquette="Parcelles suivies" valeur={String(parcelles.length)} detail="relevées au GPS" />
         <Tuile className="s3" etiquette="Surface suivie" valeur={nombre(surfaceTotale, 1)} unite="ha" />
       </div>
@@ -84,7 +101,14 @@ export function Producteurs() {
                 <td className="nombre">{p.nb_parcelles}</td>
                 <td className="nombre">{nombre(surface.get(p.id) ?? 0, 1)} ha</td>
                 <td className="nombre">{p.nb_lots}</td>
-                <td className="nombre">{masseTexte(p.biochar_kg)}</td>
+                <td className="nombre">
+                  <div className="cellule-barre">
+                    <span className="cellule-piste">
+                      <span style={{ width: `${maxBiochar ? (p.biochar_kg / maxBiochar) * 100 : 0}%` }} />
+                    </span>
+                    {masseTexte(p.biochar_kg)}
+                  </div>
+                </td>
                 <td className="nombre">{nombre(p.co2_kg, 1)} kg</td>
                 <td>{p.consentement ? <ShieldCheck size={16} color="#8CC3A0" aria-label="Accord recueilli" /> : <span className="discret">—</span>}</td>
               </tr>

@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Check, CloudOff, Flame, House, Package, Plus, RefreshCw, Users, WifiOff } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,8 @@ import { C } from '@/lib/theme';
 
 import { Pulsation } from './courbe';
 import { Texte } from './ui';
+
+const LARGEUR_CENTRE = 68;
 
 const ONGLETS: Record<string, { libelle: string; icone: typeof House }> = {
   index: { libelle: 'Accueil', icone: House },
@@ -28,6 +31,17 @@ export function BarreOnglets({ state, navigateToTab }: BottomTabBarProps) {
   const fourActif = useEtat((e) => Object.keys(e.direct.fours).length > 0);
   const routes = state.routes.filter((r) => ONGLETS[r.name]);
   const milieu = Math.ceil(routes.length / 2);
+
+  // Pastille qui glisse derrière l'onglet actif.
+  const [largeur, setLargeur] = useState(0);
+  const largeurOnglet = (largeur - 12 - LARGEUR_CENTRE) / routes.length;
+  const indexActif = Math.max(0, routes.findIndex((r) => r.key === state.routes[state.index]?.key));
+  const position = (i: number) => 6 + i * largeurOnglet + (i >= milieu ? LARGEUR_CENTRE : 0);
+  const x = useSharedValue(0);
+  useEffect(() => {
+    if (largeur) x.value = withSpring(position(indexActif), { damping: 18, stiffness: 180 });
+  }, [indexActif, largeur]); // eslint-disable-line react-hooks/exhaustive-deps
+  const stylePastille = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
 
   const onglet = (route: (typeof routes)[number]) => {
     const def = ONGLETS[route.name];
@@ -61,7 +75,8 @@ export function BarreOnglets({ state, navigateToTab }: BottomTabBarProps) {
 
   return (
     <View pointerEvents="box-none" style={[s.conteneur, { bottom: Math.max(inset.bottom, 10) + 4 }]}>
-      <View style={s.barre}>
+      <View style={s.barre} onLayout={(e) => setLargeur(e.nativeEvent.layout.width)}>
+        {largeur > 0 && <Animated.View pointerEvents="none" style={[s.pastille, { width: largeurOnglet - 8 }, stylePastille]} />}
         {routes.slice(0, milieu).map(onglet)}
         <BoutonCentral onPress={() => router.push('/nouveau-lot')} />
         {routes.slice(milieu).map(onglet)}
@@ -145,7 +160,8 @@ const s = StyleSheet.create({
     elevation: 12,
   },
   onglet: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, height: '100%' },
-  centreZone: { width: 68, alignItems: 'center', justifyContent: 'center' },
+  pastille: { position: 'absolute', left: 4, top: 8, bottom: 8, borderRadius: 20, backgroundColor: C.charbon800 },
+  centreZone: { width: LARGEUR_CENTRE, alignItems: 'center', justifyContent: 'center' },
   centre: {
     width: 54,
     height: 54,

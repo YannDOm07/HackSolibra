@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CloudUpload, Flame, Hash, Scale, ShieldCheck, Sprout, Sun, TriangleAlert, type LucideIcon } from 'lucide-react-native';
-import { useEffect } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ChevronDown, CloudUpload, Flame, Hash, Info, Scale, ShieldCheck, Sprout, Sun, TriangleAlert, type LucideIcon } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { CourbeTemperature } from '@/components/courbe';
 import { Frise, PastilleEtape } from '@/components/metier';
-import { BadgeCapteur, BadgeDemo, BadgeSimulation, Bouton, Carte, Ecran, EnTete, Section, Texte } from '@/components/ui';
+import { BadgeCapteur, BadgeDemo, BadgeSimulation, Bouton, Carte, Ecran, EnTete, Section, Squelette, Texte } from '@/components/ui';
 import { api } from '@/lib/api';
 import { dateCourte, duree, masse, nombre, temperature } from '@/lib/format';
 import { useEtat } from '@/lib/store';
@@ -183,12 +183,10 @@ export default function PasseportLot() {
                 stockés durablement dans le sol · estimation brute
               </Texte>
               <View style={s.formule}>
-                <Texte v="mono" c={C.charbon800} style={{ fontSize: 13 }}>
-                  {nombre(carbone.masse_biochar_kg, 1)} × {nombre(carbone.f_c, 2)} × {nombre(carbone.f_perm, 2)} × 44/12
-                </Texte>
-                <Texte v="petit" c={C.charbon400} style={{ fontSize: 11.5, marginTop: 2 }}>
-                  biochar sec (kg) × carbone (F_C) × permanence (F_perm) × CO₂/C
-                </Texte>
+                <Facteur valeur={`${nombre(carbone.masse_biochar_kg, 1)}`} unite="kg" libelle="biochar sec" />
+                <Facteur operateur="×" valeur={nombre(carbone.f_c, 2)} libelle="carbone (F_C)" />
+                <Facteur operateur="×" valeur={nombre(carbone.f_perm, 2)} libelle="permanence (F_perm)" accent />
+                <Facteur operateur="×" valeur="3,67" libelle="CO₂ / C (44/12)" />
               </View>
               <View style={{ marginTop: 14 }}>
                 <Texte v="etiquette" c={C.charbon400} style={{ fontSize: 9.5 }}>
@@ -198,10 +196,16 @@ export default function PasseportLot() {
                   {CLASSES[carbone.classe]?.libelle ?? carbone.classe}
                 </Texte>
               </View>
-              <Texte v="petit" c={C.charbon400} style={{ marginTop: 12, fontSize: 12, lineHeight: 17 }}>
-                {carbone.reference}. {carbone.nature}
-              </Texte>
+              <EnSavoirPlus titre="Méthode et source">
+                {carbone.reference}. {carbone.nature} La permanence vient de la température de carbonisation mesurée par le capteur du four.
+              </EnSavoirPlus>
             </>
+          ) : lot.masse_biochar_kg && !enAttente ? (
+            <View style={{ gap: 10 }}>
+              <Squelette hauteur={40} largeur="55%" />
+              <Squelette hauteur={14} largeur="70%" />
+              <Squelette hauteur={58} rayon={14} />
+            </View>
           ) : (
             <Texte v="petit" c={C.charbon500}>
               Le bilan s'affichera après la cuisson et la pesée du biochar.
@@ -226,8 +230,44 @@ export default function PasseportLot() {
           </Carte>
         </Section>
       )}
-      {!passeport && !enAttente && <ActivityIndicator color={C.charbon400} style={{ marginTop: 24 }} />}
     </Ecran>
+  );
+}
+
+function Facteur({ valeur, unite, libelle, accent, operateur }: { valeur: string; unite?: string; libelle: string; accent?: boolean; operateur?: string }) {
+  return (
+    <View style={[s.facteur, accent && { backgroundColor: C.feuille100 }]}>
+      <Texte v="mono" c={accent ? C.feuille700 : C.charbon900} style={{ fontSize: 16 }} numberOfLines={1}>
+        {operateur ? <Texte v="mono" c={C.charbon300} style={{ fontSize: 14 }}>{`${operateur} `}</Texte> : null}
+        {valeur}
+        {unite ? <Texte v="mono" c={C.charbon400} style={{ fontSize: 10.5 }}>{` ${unite}`}</Texte> : null}
+      </Texte>
+      <Texte v="petit" c={C.charbon500} style={{ fontSize: 11.5, lineHeight: 15, marginTop: 2 }} numberOfLines={1}>
+        {libelle}
+      </Texte>
+    </View>
+  );
+}
+
+function EnSavoirPlus({ titre, children }: { titre: string; children: React.ReactNode }) {
+  const [ouvert, setOuvert] = useState(false);
+  return (
+    <View style={{ marginTop: 14 }}>
+      <Pressable onPress={() => setOuvert((o) => !o)} hitSlop={8} style={s.savoir}>
+        <Info size={14} color={C.charbon500} />
+        <Texte v="petitFort" c={C.charbon600} style={{ flex: 1 }}>
+          {titre}
+        </Texte>
+        <ChevronDown size={16} color={C.charbon400} style={{ transform: [{ rotate: ouvert ? '180deg' : '0deg' }] }} />
+      </Pressable>
+      {ouvert && (
+        <Animated.View entering={FadeIn.duration(180)}>
+          <Texte v="petit" c={C.charbon500} style={{ marginTop: 8, lineHeight: 18 }}>
+            {children}
+          </Texte>
+        </Animated.View>
+      )}
+    </View>
   );
 }
 
@@ -312,6 +352,8 @@ const s = StyleSheet.create({
   ligneEntre: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
   grille: { flexDirection: 'row', gap: 10, marginTop: 10, paddingTop: 14, borderTopWidth: 1, borderTopColor: C.papier200 },
   alerte: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginTop: 12 },
-  formule: { marginTop: 14, padding: 12, borderRadius: 12, backgroundColor: C.papier100 },
+  formule: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
+  facteur: { width: '48.5%', flexGrow: 1, paddingVertical: 11, paddingHorizontal: 12, borderRadius: 12, backgroundColor: C.papier100 },
+  savoir: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: C.papier100 },
   ligne: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: C.papier100 },
 });

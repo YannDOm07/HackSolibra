@@ -1,10 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft, Scale, Ticket, TriangleAlert } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { CourbeTemperature, Pulsation } from '@/components/courbe';
 import { TemperatureDirecte } from '@/components/metier';
@@ -89,6 +90,13 @@ export default function CuissonEnDirect() {
     };
   }, [id]);
 
+  // Une vibration marque chaque changement de phase (allumage → pyrolyse → extinction).
+  const phasePrecedente = useRef<string | null>(null);
+  useEffect(() => {
+    if (phasePrecedente.current && phasePrecedente.current !== phase && phase !== 'en_attente') vibre.impact();
+    phasePrecedente.current = phase;
+  }, [phase]);
+
   const enCours = detail?.statut === 'en_cours' && phase !== 'terminee';
   const dernier = points[points.length - 1];
   const analyse = detail?.analyse;
@@ -119,6 +127,7 @@ export default function CuissonEnDirect() {
     <SafeAreaView edges={['top']} style={s.ecran}>
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+        <LueurBraise temp={enCours ? dernier?.[1] ?? 0 : 0} />
         <View style={s.haut}>
           <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/fours'))} hitSlop={10} style={s.retour}>
             <ChevronLeft size={20} color={C.papier50} />
@@ -279,3 +288,22 @@ const s = StyleSheet.create({
     backgroundColor: 'rgba(242,101,42,0.12)',
   },
 });
+
+/** Lueur derrière la température : elle s'intensifie avec la chaleur du four. */
+function LueurBraise({ temp }: { temp: number }) {
+  const intensite = Math.max(0, Math.min(1, (temp - 60) / 640));
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', top: -20, left: -20, right: -20, height: 460 }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <RadialGradient id="lueur" cx="28%" cy="42%" r="72%">
+            <Stop offset="0" stopColor={C.braise500} stopOpacity={0.4 * intensite} />
+            <Stop offset="0.5" stopColor={C.braise600} stopOpacity={0.12 * intensite} />
+            <Stop offset="1" stopColor={C.charbon950} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Rect x="0" y="0" width="100%" height="100%" fill="url(#lueur)" />
+      </Svg>
+    </View>
+  );
+}

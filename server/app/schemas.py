@@ -89,6 +89,11 @@ class FourOut(ORM):
     derniere_temp: float | None = None
     phase: str | None = None
     source: str | None = None
+    nb_cuissons: int = 0
+    derniere_cuisson_id: str | None = None
+    derniere_cuisson_le: UTC | None = None
+    derniere_classe: str | None = None
+    derniere_temp_retenue: float | None = None
 
 
 class AnalyseOut(BaseModel):

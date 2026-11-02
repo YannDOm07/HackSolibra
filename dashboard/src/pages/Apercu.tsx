@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router'
 import { BadgeDemo, BadgeSource, EnTetePage, Panneau, PuceEtape, Tuile } from '@/components/base'
 import { CarteTerrain } from '@/components/carte'
 import { BarreEtapes, BarresHorizontales, ColonnesSemaines, useVueTableau } from '@/components/graphiques'
+import { useNombreAnime } from '@/lib/anime'
 import { useDirect } from '@/lib/direct'
 import { useApi } from '@/lib/donnees'
 import { dateCourte, ilYa, masse, masseTexte, nombre, pourcent, temperature } from '@/lib/format'
@@ -33,10 +34,11 @@ export function Apercu() {
   const { donnees: parcelles = [] } = useApi<Parcelle[]>('/parcelles', 60_000)
   const { donnees: producteurs = [] } = useApi<Producteur[]>('/producteurs', 60_000)
   const parId = useMemo(() => Object.fromEntries(producteurs.map((p) => [p.id, p])), [producteurs])
+  const co2Anime = useNombreAnime(impact?.co2_kg ?? 0, 1100)
 
   if (!impact) return <EnTetePage surtitre="Coopérative pilote · Agnéby-Tiassa" titre="Vue d'ensemble" />
 
-  const co2 = masse(impact.co2_kg)
+  const co2 = masse(co2Anime)
   const classes = ['haute', 'moyenne', 'basse', 'insuffisante'].map((c) => ({ libelle: CLASSES[c].court, valeur: impact.classes[c] ?? 0 }))
   const partFemmes = impact.producteurs ? impact.productrices / impact.producteurs : null
 
@@ -138,12 +140,15 @@ export function Apercu() {
               </tbody>
             </table>
           ) : (
-            <ColonnesSemaines
-              serie={impact.serie_hebdo}
-              valeur={mesure}
-              unite={mesure === 'biochar_kg' ? 'kg de biochar' : 'kg de CO₂'}
-              couleur={mesure === 'biochar_kg' ? COULEURS.braise : COULEURS.feuille}
-            />
+            <>
+              <ColonnesSemaines
+                serie={impact.serie_hebdo}
+                valeur={mesure}
+                unite={mesure === 'biochar_kg' ? 'kg de biochar' : 'kg de CO₂'}
+                couleur={mesure === 'biochar_kg' ? COULEURS.braise : COULEURS.feuille}
+              />
+              <ResumeSemaines serie={impact.serie_hebdo} mesure={mesure} />
+            </>
           )}
         </Panneau>
 
@@ -156,7 +161,7 @@ export function Apercu() {
           </Panneau>
         </div>
 
-        <Panneau className="s8" titre="Carte du terrain" sousTitre="Parcelles relevées au GPS et fours de la coopérative">
+        <Panneau className="s8" titre="Carte du terrain" sousTitre="Cliquez sur un four ou une parcelle pour voir le détail et les flux de la boucle">
           <CarteTerrain parcelles={parcelles} fours={fours} lots={lots} producteurs={parId} direct={direct.fours} />
         </Panneau>
 
@@ -250,6 +255,30 @@ export function Apercu() {
             </tbody>
           </table>
         </Panneau>
+      </div>
+    </div>
+  )
+}
+
+function ResumeSemaines({ serie, mesure }: { serie: Impact['serie_hebdo']; mesure: 'biochar_kg' | 'co2_kg' }) {
+  const total = serie.reduce((a, s) => a + s[mesure], 0)
+  const actives = serie.filter((s) => s[mesure] > 0)
+  const meilleure = serie.reduce((a, s) => (s[mesure] > a[mesure] ? s : a), serie[0])
+  return (
+    <div className="resume">
+      <div>
+        <div className="etiquette">Total sur 10 semaines</div>
+        <div className="resume-valeur">{masseTexte(total)}</div>
+      </div>
+      <div>
+        <div className="etiquette">Meilleure semaine</div>
+        <div className="resume-valeur">
+          {masseTexte(meilleure?.[mesure])} <span className="discret">· {dateCourte(meilleure?.semaine)}</span>
+        </div>
+      </div>
+      <div>
+        <div className="etiquette">Moyenne des semaines actives</div>
+        <div className="resume-valeur">{masseTexte(actives.length ? total / actives.length : 0)}</div>
       </div>
     </div>
   )

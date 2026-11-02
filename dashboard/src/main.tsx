@@ -15,6 +15,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { Coque } from '@/components/Coque'
 import { FournisseurDirect } from '@/lib/direct'
 import { Apercu } from '@/pages/Apercu'
+import { Carte } from '@/pages/Carte'
 import { Fours } from '@/pages/Fours'
 import { Ia } from '@/pages/Ia'
 import { Lot } from '@/pages/Lot'
@@ -31,6 +32,7 @@ createRoot(document.getElementById('racine')!).render(
           <Route element={<Coque />}>
             <Route index element={<Apercu />} />
             <Route path="fours" element={<Fours />} />
+            <Route path="carte" element={<Carte />} />
             <Route path="lots" element={<Lots />} />
             <Route path="lots/:id" element={<Lot />} />
             <Route path="producteurs" element={<Producteurs />} />

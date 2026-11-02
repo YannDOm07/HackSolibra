@@ -522,6 +522,194 @@ h2 {
   background: var(--c950);
   font-family: var(--sans);
 }
+.carte-cadre {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--bord);
+  min-height: 320px;
+}
+.carte-outils {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.carte-groupe {
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--c600);
+}
+.carte-groupe .carte-bouton {
+  border: 0;
+  border-radius: 0;
+}
+.carte-groupe .carte-bouton + .carte-bouton {
+  border-left: 1px solid var(--c600);
+}
+.carte-bouton {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--c600);
+  background: rgba(24, 22, 19, 0.9);
+  color: var(--texte);
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s;
+}
+.carte-bouton:hover {
+  background: var(--c700);
+}
+.carte-verre {
+  background: rgba(24, 22, 19, 0.9);
+  border-color: var(--c600);
+  backdrop-filter: blur(6px);
+}
+.carte-stats {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1000;
+  display: flex;
+  gap: 14px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: rgba(24, 22, 19, 0.88);
+  border: 1px solid var(--c700);
+  font-size: 12.5px;
+  color: var(--texte2);
+  backdrop-filter: blur(6px);
+}
+.carte-stats b {
+  color: var(--texte);
+  font-weight: 600;
+}
+.carte-panneau {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  bottom: 30px; /* laisse visible l'attribution du fond de carte (licence) */
+  width: 340px;
+  max-width: calc(100% - 24px);
+  z-index: 1001;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(24, 22, 19, 0.95);
+  border: 1px solid var(--c600);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  animation: glisse 0.22s ease-out;
+}
+@keyframes glisse {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+.carte-fermer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1px solid var(--c600);
+  background: var(--c850);
+  cursor: pointer;
+}
+.carte-bloc {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--c850);
+  border: 1px solid var(--c700);
+}
+.carte-chiffres {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0 6px;
+}
+.carte-lot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--c850);
+  border: 1px solid var(--c700);
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+.carte-lot:hover {
+  border-color: var(--c500);
+}
+.bascule {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--c700);
+  background: transparent;
+  color: var(--texte2);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.bascule[aria-pressed='true'] {
+  background: var(--c850);
+  color: var(--texte);
+  border-color: var(--c600);
+}
+.bascule[aria-pressed='false'] {
+  opacity: 0.55;
+}
+.icone-four {
+  background: none;
+  border: 0;
+}
+.four-marqueur {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #181613;
+  border: 2px solid #f2652a;
+  color: #ffb37a;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+  transition: transform 0.15s;
+}
+.four-marqueur:hover {
+  transform: scale(1.12);
+}
+.four-marqueur.actif {
+  background: #f2652a;
+  color: #fff8f2;
+  animation: four-pulse 1.6s ease-out infinite;
+}
+.four-marqueur.choisi {
+  outline: 3px solid #fffdfa;
+  outline-offset: 2px;
+}
+@keyframes four-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(242, 101, 42, 0.65), 0 6px 16px rgba(0, 0, 0, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 16px rgba(242, 101, 42, 0), 0 6px 16px rgba(0, 0, 0, 0.55);
+  }
+}
 .fond-plan {
   filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.85) saturate(0.3);
 }
@@ -586,6 +774,226 @@ h2 {
 .chargement {
   opacity: 0.55;
   transition: opacity 0.2s;
+}
+
+/* ---------- Méthode ---------- */
+.formule-tuiles {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.facteur {
+  flex: 1 1 150px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--c850);
+  border: 1px solid var(--bord);
+}
+.facteur.accent {
+  border-color: #2f7049;
+  background: rgba(61, 140, 95, 0.1);
+}
+.facteur.resultat {
+  border-color: #5a2a14;
+  background: rgba(242, 101, 42, 0.1);
+}
+.facteur-valeur {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+}
+.facteur.accent .facteur-valeur {
+  color: var(--feuille300);
+}
+.facteur.resultat .facteur-valeur {
+  color: var(--braise300);
+}
+.facteur-titre {
+  font-weight: 600;
+  margin-top: 6px;
+}
+.facteur-detail {
+  font-size: 12.5px;
+  color: var(--texte2);
+  margin-top: 2px;
+}
+.operateur {
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 20px;
+  color: var(--c400);
+  padding: 0 2px;
+}
+.echelle {
+  padding: 26px 0 8px;
+}
+.echelle-barre {
+  position: relative;
+  height: 58px;
+}
+.echelle-segment {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.echelle-classe {
+  font-weight: 600;
+  font-size: 13px;
+  color: #f5efe6;
+}
+.echelle-f {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: rgba(245, 239, 230, 0.8);
+}
+.echelle-plage {
+  position: absolute;
+  top: -12px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--braise500);
+}
+.echelle-axe {
+  position: relative;
+  height: 22px;
+  margin-top: 6px;
+}
+.echelle-axe span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--texte3);
+  white-space: nowrap;
+}
+.sources {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.source {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--c850);
+  border: 1px solid var(--bord);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.source:hover {
+  border-color: var(--c500);
+  transform: translateY(-2px);
+}
+.source-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--braise300);
+}
+.source-valeur {
+  font-weight: 600;
+  line-height: 1.4;
+}
+.source-ref {
+  margin-top: auto;
+  font-size: 12.5px;
+  color: var(--texte2);
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* ---------- Compléments vue d'ensemble, producteurs, menu ---------- */
+.resume {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--c800);
+}
+.resume-valeur {
+  font-weight: 600;
+  font-size: 18px;
+  margin-top: 4px;
+}
+.repartition {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin-top: 12px;
+}
+.repartition span {
+  border-radius: 4px;
+}
+.cellule-barre {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.cellule-piste {
+  width: 80px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--c800);
+  overflow: hidden;
+  display: inline-block;
+}
+.cellule-piste span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--braise500);
+}
+.demo-note {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  color: var(--texte3);
+  line-height: 1.45;
+}
+
+.reperes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+.repere {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--c850);
+  border: 1px solid var(--bord);
+}
+
+/* ---------- Apparition des pages ---------- */
+.page > * {
+  animation: apparition 0.28s ease-out both;
+}
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page > * {
+    animation: none;
+  }
 }
 
 /* ---------- Rapport imprimable ---------- */

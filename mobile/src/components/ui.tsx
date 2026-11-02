@@ -16,7 +16,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import Animated, { FadeInUp, FadeOutUp, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeOutUp, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { vibre } from '@/lib/outils';
@@ -346,6 +346,17 @@ export function Choix<T extends string>({
       })}
     </View>
   );
+}
+
+// ---------- Chargement ----------
+/** Bloc gris qui respire, à la place d'une roue de chargement : la mise en page ne saute pas à l'arrivée des données. */
+export function Squelette({ hauteur = 16, largeur = '100%', rayon = 10, style }: { hauteur?: number; largeur?: number | `${number}%`; rayon?: number; style?: StyleProp<ViewStyle> }) {
+  const o = useSharedValue(0.45);
+  useEffect(() => {
+    o.value = withRepeat(withTiming(1, { duration: 750 }), -1, true);
+  }, [o]);
+  const anime = useAnimatedStyle(() => ({ opacity: o.value }));
+  return <Animated.View style={[{ height: hauteur, width: largeur, borderRadius: rayon, backgroundColor: C.papier200 }, anime, style]} />;
 }
 
 // ---------- Notification ----------

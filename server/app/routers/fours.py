@@ -2,7 +2,7 @@ import asyncio
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .. import config
@@ -27,9 +27,16 @@ def four_out(db: Session, four: Four) -> FourOut:
     if etat is None and (c := cuisson_active(db, four.id)):
         etat = {"cuisson_id": c.id, "temp": None, "phase": None, "source": c.source}
     etat = etat or {}
+    terminees = select(Cuisson).where(Cuisson.four_id == four.id, Cuisson.statut == "terminee")
+    derniere = db.scalars(terminees.order_by(Cuisson.debut.desc()).limit(1)).first()
     return FourOut.model_validate(four).model_copy(update={
         "cuisson_active_id": etat.get("cuisson_id"), "derniere_temp": etat.get("temp"),
         "phase": etat.get("phase"), "source": etat.get("source"),
+        "nb_cuissons": db.scalar(select(func.count()).select_from(terminees.subquery())) or 0,
+        "derniere_cuisson_id": derniere.id if derniere else None,
+        "derniere_cuisson_le": derniere.debut if derniere else None,
+        "derniere_classe": derniere.classe if derniere else None,
+        "derniere_temp_retenue": derniere.temp_retenue if derniere else None,
     })
 
 

@@ -1,4 +1,4 @@
-import { BookOpen, FileText, Flame, LayoutDashboard, Microscope, Package, Users } from 'lucide-react'
+import { BookOpen, FileText, Flame, LayoutDashboard, Map, Microscope, Package, Users } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 
 import { useApi } from '@/lib/donnees'
@@ -8,6 +8,7 @@ import type { Meta } from '@/lib/types'
 const NAVIGATION = [
   { vers: '/', libelle: "Vue d'ensemble", icone: LayoutDashboard },
   { vers: '/fours', libelle: 'Fours en direct', icone: Flame },
+  { vers: '/carte', libelle: 'Carte du terrain', icone: Map },
   { vers: '/lots', libelle: 'Lots', icone: Package },
   { vers: '/producteurs', libelle: 'Producteurs', icone: Users },
   { vers: '/ia', libelle: 'Diagnostics IA', icone: Microscope },
@@ -58,12 +59,10 @@ export function Coque() {
             {connecte ? 'Flux en direct actif' : 'Flux en direct coupé'}
           </span>
           {meta?.donnees_demo && (
-            <span className="discret" style={{ lineHeight: 1.45 }}>
-              <span className="badge" style={{ marginRight: 6 }}>
-                Démo
-              </span>
-              Producteurs, parcelles et lots fictifs.
-            </span>
+            <div className="demo-note">
+              <span className="badge">Démo</span>
+              <span>Producteurs, parcelles et lots fictifs ; villages réels.</span>
+            </div>
           )}
         </div>
       </aside>

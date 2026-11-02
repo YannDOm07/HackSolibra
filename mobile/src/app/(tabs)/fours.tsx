@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
-import { Flame } from 'lucide-react-native';
+import { ChevronRight, Cpu, Flame, ShieldCheck, Thermometer, type LucideIcon } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { Pulsation } from '@/components/courbe';
 import { CarteFour } from '@/components/metier';
-import { Ecran, EnTete, Texte, Vide } from '@/components/ui';
+import { Carte, Ecran, EnTete, Texte, Vide } from '@/components/ui';
 import { useEtat } from '@/lib/store';
 import { C } from '@/lib/theme';
 
@@ -54,10 +54,34 @@ export default function Fours() {
           ))}
         </View>
       )}
-      <Texte v="petit" c={C.charbon400} style={{ marginTop: 20, lineHeight: 19 }}>
-        Chaque four porte un thermocouple relié à une carte ESP32. La courbe de température prouve la qualité de chaque cuisson et fixe la
-        classe de stabilité du carbone (méthode GIEC).
-      </Texte>
+      <Carte style={{ marginTop: 20 }}>
+        <Texte v="etiquette" c={C.charbon500}>
+          Comment le four prouve la qualité
+        </Texte>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 16 }}>
+          <EtapePreuve icone={Thermometer} titre="Thermocouple" texte="dans la zone de pyrolyse" />
+          <ChevronRight size={16} color={C.charbon300} style={{ marginTop: 14 }} />
+          <EtapePreuve icone={Cpu} titre="Carte ESP32" texte="une mesure toutes les 2 s" />
+          <ChevronRight size={16} color={C.charbon300} style={{ marginTop: 14 }} />
+          <EtapePreuve icone={ShieldCheck} titre="Classe GIEC" texte="fixe la permanence du carbone" />
+        </View>
+      </Carte>
     </Ecran>
+  );
+}
+
+function EtapePreuve({ icone: Icone, titre, texte }: { icone: LucideIcon; titre: string; texte: string }) {
+  return (
+    <View style={{ flex: 1, alignItems: 'center' }}>
+      <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: '#FDEBDD', alignItems: 'center', justifyContent: 'center' }}>
+        <Icone size={20} color={C.braise600} />
+      </View>
+      <Texte v="petitFort" style={{ marginTop: 8, textAlign: 'center', fontSize: 12.5 }}>
+        {titre}
+      </Texte>
+      <Texte v="petit" c={C.charbon500} style={{ textAlign: 'center', fontSize: 11.5, lineHeight: 15 }}>
+        {texte}
+      </Texte>
+    </View>
   );
 }
